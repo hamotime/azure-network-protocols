@@ -73,9 +73,19 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <br />
 
 <p>
-<img src="https://i.imgur.com/DJmEXEB.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+<b>3. Configuring a Firewall (Network Security Group)</b>
+
+- Open the Network Security Group (NSG) of the Linux VM in Azure and disable inbound and outbound ICMP traffic. To do this open the VM in Azure -> Network Settings -> Observe the Network Security Group Panel, click Create port rule -> Configure the settings to Block ICMP Traffic to and from the Linux VM (Refer to screenshot for this step if not sure what to configure), click Add.
+- Back in the Windows VM ping the Linux VM. You will see IN Wirehsark "No response found!" messages to the ping requests. Also observe the "Request timed out" messages in command line or Powershell. This demonstrates that we successfully created a virtual firewall rule to block incoming ICMP traffic to the Linux VM.
+- Open NSG of the Linux VM in Azure and delete the block ICMP rule that we created. Click the trash can icon that is next to it to delete it.
+- Go back to the Windows 10 VM and ping the Linux VM. Observe Wirehsark and you should see request and reply communication between the two VMs again. You should also see successful replies from the Linux VM in Powershell from the ping request. We can successfully communicate with the Linux VM again over ICMP.
 </p>
 <p>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+<img src="https://i.imgur.com/oA2Dyma.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
+<img src="https://i.imgur.com/pl3H0mk.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
+<img src="https://i.imgur.com/w7RunW8.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
+<img src="https://i.imgur.com/WywnzPT.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
+<img src="https://i.imgur.com/4tIRCIK.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
+<img src="https://i.imgur.com/OH6iwx0.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
 </p>
 <br />
