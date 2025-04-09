@@ -79,6 +79,7 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 - Back in the Windows VM ping the Linux VM. You will see IN Wirehsark "No response found!" messages to the ping requests. Also observe the "Request timed out" messages in command line or Powershell. This demonstrates that we successfully created a virtual firewall rule to block incoming ICMP traffic to the Linux VM.
 - Open NSG of the Linux VM in Azure and delete the block ICMP rule that we created. Click the trash can icon that is next to it to delete it.
 - Go back to the Windows 10 VM and ping the Linux VM. Observe Wirehsark and you should see request and reply communication between the two VMs again. You should also see successful replies from the Linux VM in Powershell from the ping request. We can successfully communicate with the Linux VM again over ICMP.
+- You can stop the packet capture and close Wireshark.
 </p>
 <p>
 <img src="https://i.imgur.com/oA2Dyma.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
@@ -87,5 +88,29 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <img src="https://i.imgur.com/WywnzPT.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
 <img src="https://i.imgur.com/4tIRCIK.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
 <img src="https://i.imgur.com/OH6iwx0.png" height="80%" width="80%" alt="Configuring a Firewall Steps"/>
+</p>
+<br />
+
+
+<p>
+<b>4. Observe SSH Traffic</b>
+
+- Log back into the Windows VM
+- Open Wireshark and start a packet capture.
+- Filter for SSH traffic only. Can do this by using filters "ssh" or "tcp.port == 22"
+- From the Windows 10 VM SSH into your Ubuntu VM via its private IP address. Command will use the format ssh username@privateipaddress, for us is ssh labuser@10.0.0.5.
+- During the connection process you will notice SSH traffic generating in Wirehsark telling us the two hosts are conducting an SSH handshake and encrypted session setup. When the key exchange between the hosts is complete, observe the packet that says "New Keys". This tells us the SSH connection is established and all subsiquent packets going forward will be encrypted. 
+- Once connected, you will see the username change to labuser@linux-vm, this signals you have successfully logged into the Linux VM over SSH.
+- Type in commands and observe the SSH traffic in Wireshark. You will notice packets being creating for individual keystrokes and commands being entered. The payloads for the packets will be encrypted (unreadable) as a secure encrypted tunnel has been created between the two hosts using SSH.
+<p>
+<img src="https://i.imgur.com/5RpgCn7.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/2xkrgzf.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/s68OYMV.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/ePiSE6S.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/2V889Nq.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/oSnHsmv.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/ZZ0rSYh.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/NDGv8Ts.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+<img src="https://i.imgur.com/BhAqiUW.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
 </p>
 <br />
