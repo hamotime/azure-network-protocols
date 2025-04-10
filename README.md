@@ -25,9 +25,9 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 - Observe ICMP Traffic
 - Configuring a Firewall (Network Security Group)
 - Observe SSH Traffic
-- Observee DHCP Traffic
-- Observer DNS Traffic
-- Observer RDP Traffic
+- Observe DHCP Traffic
+- Observe DNS Traffic
+- Observe RDP Traffic
 
 <h2>Actions and Observations</h2>
 
