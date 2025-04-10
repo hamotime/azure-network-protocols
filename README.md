@@ -102,6 +102,7 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 - During the connection process you will notice SSH traffic generating in Wirehsark telling us the two hosts are conducting an SSH handshake and encrypted session setup. When the key exchange between the hosts is complete, observe the packet that says "New Keys". This tells us the SSH connection is established and all subsiquent packets going forward will be encrypted. 
 - Once connected, you will see the username change to labuser@linux-vm, this signals you have successfully logged into the Linux VM over SSH.
 - Type in commands and observe the SSH traffic in Wireshark. You will notice packets being creating for individual keystrokes and commands being entered. The payloads for the packets will be encrypted (unreadable) as a secure encrypted tunnel has been created between the two hosts using SSH.
+- Stop Packet Capture in Wireshark
 <p>
 <img src="https://i.imgur.com/5RpgCn7.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
 <img src="https://i.imgur.com/2xkrgzf.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
@@ -112,5 +113,57 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <img src="https://i.imgur.com/ZZ0rSYh.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
 <img src="https://i.imgur.com/NDGv8Ts.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
 <img src="https://i.imgur.com/BhAqiUW.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
+</p>
+<br />
+
+<p>
+<b>4. Observe DHCP Traffic</b>
+
+- Open Wireshark, Start a packet capture and filter for DHCP traffic.
+- Open notepad and enter the following:<br />
+- ipconfig /release
+- ipconfig /renew
+- Save the file as a .bat file any directory. I have saved it to C:\programdata\dhcp.bat
+- This file will execute commands to release the current IP address from the VM and request a new IP address from the DHCP server. This will create DHCP traffic in Wireshark which we will observe.
+- Open Powershell as an administrator, change the directory to where you saved the bat file, and use ls command to confirm there file is there. Next type .\dhcp.bat and press enter.
+- Should should disconnect from the VM as your IP was released and then within 30 seconds be reconnected automatically once the VM obtains a new IP address. If you don't automatically connect back to the VM, manually connect back in with the RDP client.
+- Open Wirehsark and observe the traffic. You should see packets showing the Discover, Offer, Request and Acknowledge process between the VM (10.0.0.4) and the DHCP Server (168.63.129.16). The release packet was sent by the VM to the DHCP server by using the ipconfig /release command. Then ipconfig /renew was run immediately afterwards which initiated the Discover, Offer, Request and Acknowledge process between the VM and the DHCP server for my vnet.
+- Stop the packet capture in Wireshark.
+<p>
+<img src="https://i.imgur.com/SqPJYGq.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/Ln0lznZ.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/rF1nsgn.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/aOC0dop.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/WQUgaeD.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/4hXufla.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/qir3hbx.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/478xkKc.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+<img src="https://i.imgur.com/YD2bgLG.png" height="80%" width="80%" alt="DHCP Traffic Steps"/>
+</p>
+<br />
+
+<p>
+<b>5. Observe DNS Traffic</b>
+
+- Open Wireshark, start a packet capture and filter for DNS traffic.
+- Open Powershell and type nslookup disney.com. This command queries the DNS server to find the IP associated with a domain name. It can also provide us with DNS records used by domain names.
+- Observe the DNS traffic in Wirehsark. You can see we captured the communcation between the VM (10.0.0.4) and the DNS Server (168.63.129.16). Our VM asked the DNS server for the IP address of disney.com, after same failed responses from the DNS server (indicated by the "No such same") it eventually found the correct A record for disney.com and returned the IP 130.211.198.204 to us.
+- Stop the packet capture.
+<p>
+<img src="https://i.imgur.com/STAivtx.png" height="80%" width="80%" alt="DNS Traffic Steps"/>
+<img src="https://i.imgur.com/u6QybIY.png" height="80%" width="80%" alt="DNS Traffic Steps"/>
+<img src="https://i.imgur.com/q2keFbj.png" height="80%" width="80%" alt="DNS Traffic Steps"/>
+</p>
+<br />
+
+<p>
+<b>6. Observe RDP (Remote Desktop Protocol)</b>
+
+- RDP allows is a protocol that allows for a remote connection between hosts using a GUI.
+- Open Wireshark, start a packet capture and filter for RDP traffic. If you cannot filter using "rdp" use the filter "tcp.port == 3389 || udp.port == 3389" (as RDP can use both TCP and UDP protocols). 
+- You should observe a constant flow of packets. This is because RDP is constantly streaming a GUI of the VM (10.0.0.4) to my computer (122.150.109.81). Traffic is constantly going back and forth between the two hosts and will be non-stop as long as the RDP connection exists. If you go to whatismyip.com which it will display your public IP address. Go back to Wireshark and you can see it in the packet capture.
+- Stop the packet capture.
+<p>
+<img src="https://i.imgur.com/vekOvqx.png" height="80%" width="80%" alt="DNS Traffic Steps"/>
 </p>
 <br />
