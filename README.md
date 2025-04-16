@@ -17,7 +17,7 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <h2>Operating Systems Used </h2>
 
 - Windows 10 (21H2)
-- Ubuntu Server 20.04
+- Ubuntu Server 22.04
 
 <h2>High-Level Steps</h2>
 
@@ -34,9 +34,9 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <p>
 <b>1. Create our Virtual Machines</b>
 
-- Create a Resource Group
-- Create a Windows 10 Virtual Machine. When creating, select the previously created Resource Group and allow it to create a new Virtual Network (Vnet) and Subnet
-- Create a Linux (Ubuntu) VM. While creating, select the previously created Resource Group and the Virtual Network you created when creating the Windows 10 VM. <b> THE VIRTUAL NETWORK MUST BE THE SAME FOR BOTH VMS! </b>
+- Create a Resource Group. I've called mine "NA-Lab"
+- Create a Windows 10 Virtual Machine. When creating, select the previously created Resource Group and create a new Virtual Network (Vnet) and Subnet in setup process.
+- Create a Linux (Ubuntu) VM. While creating, select the previously created Resource Group and the Vnet you created when creating the Windows 10 VM. <b>THE VIRTUAL NETWORK MUST BE THE SAME FOR BOTH VMS!</b>
 - Ensure both VMs are in the same Virtual Network/Subnet
 - We are done. Make sure to keep both VMs running for the next step.
 </p>
@@ -60,7 +60,7 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 - Open Wireshark and start a packet capture. Make sure to select the correct NIC (Usually Ethernet) and click the blue play button in the top left.
 - Within Wirehsark, filter for ICMP traffic only by typing ICMP in the text bar below the toolbar.
 - Retrieve the private IP address of the Linux VM and attempt to ping it from the Windows 10 VM. Observe the ping requests and replies within Wireshark. <b>We can see a total of 8 packets were captured showing request and reply ICMP communication between the two VMs.</b>
-- From the Windows 10 VM, open command line or Powershell and attempt to ping a public website and observe the traffic in Wireshark.<b>Can also see 8 packets were captured when pinging google.com showing request and reply ICMP communication between Windows 10 VM and the google.com web server. Furthermore, we know that we have successfully reached the destination over ICMP.</b>
+- From the Windows 10 VM, open command line or Powershell and attempt to ping a public website and observe the traffic in Wireshark. <b>Can also see 8 packets were captured when pinging google.com showing request and reply ICMP communication between Windows 10 VM and the google.com web server. Furthermore, we know that we have successfully reached the destination over ICMP.</b>
 </p>
 <p>
 <img src="https://i.imgur.com/3y5uayG.png" height="80%" width="80%" alt="Observe ICMP Traffic Steps"/>
@@ -75,8 +75,8 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <p>
 <b>3. Configuring a Firewall (Network Security Group)</b>
 
-- Open the Network Security Group (NSG) of the Linux VM in Azure and disable inbound and outbound ICMP traffic. To do this open the VM in Azure -> Network Settings -> Observe the Network Security Group Panel, click Create port rule -> Configure the settings to Block ICMP Traffic to and from the Linux VM (Refer to screenshot for this step if not sure what to configure), click Add.
-- Back in the Windows VM ping the Linux VM. You will see IN Wirehsark "No response found!" messages to the ping requests. Also observe the "Request timed out" messages in command line or Powershell. This demonstrates that we successfully created a virtual firewall rule to block incoming ICMP traffic to the Linux VM.
+- Open the Network Security Group (NSG) of the Linux VM in Azure and disable inbound and outbound ICMP traffic. To do this open the VM in Azure -> Network Settings -> Observe the Network Security Group Panel, click "Create port rule" -> Configure the settings to Block ICMP Traffic to and from the Linux VM (Refer to screenshot for this step if not sure what to configure), click Add.
+- Back in the Windows VM ping the Linux VM. You will see in Wirehsark "No response found!" messages to the ping requests. Also observe the "Request timed out" messages in command line or Powershell. This demonstrates that we successfully created a virtual firewall rule to block incoming ICMP traffic to the Linux VM.
 - Open NSG of the Linux VM in Azure and delete the block ICMP rule that we created. Click the trash can icon that is next to it to delete it.
 - Go back to the Windows 10 VM and ping the Linux VM. Observe Wirehsark and you should see request and reply communication between the two VMs again. You should also see successful replies from the Linux VM in Powershell from the ping request. We can successfully communicate with the Linux VM again over ICMP.
 - You can stop the packet capture and close Wireshark.
@@ -95,13 +95,13 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <p>
 <b>4. Observe SSH Traffic</b>
 
-- Log back into the Windows VM
+- Log back into the Windows VM.
 - Open Wireshark and start a packet capture.
-- Filter for SSH traffic only. Can do this by using filters "ssh" or "tcp.port == 22"
+- Filter for SSH traffic only! Can do this by using filters "ssh" or "tcp.port == 22"
 - From the Windows 10 VM SSH into your Ubuntu VM via its private IP address. Command will use the format ssh username@privateipaddress, for us is ssh labuser@10.0.0.5.
 - During the connection process you will notice SSH traffic generating in Wirehsark telling us the two hosts are conducting an SSH handshake and encrypted session setup. When the key exchange between the hosts is complete, observe the packet that says "New Keys". This tells us the SSH connection is established and all subsiquent packets going forward will be encrypted. 
 - Once connected, you will see the username change to labuser@linux-vm, this signals you have successfully logged into the Linux VM over SSH.
-- Type in commands and observe the SSH traffic in Wireshark. You will notice packets being creating for individual keystrokes and commands being entered. The payloads for the packets will be encrypted (unreadable) as a secure encrypted tunnel has been created between the two hosts using SSH.
+- Type in commands and observe the SSH traffic populating in Wireshark. You will notice packets being creating for individual keystrokes and commands being entered. The payloads for the packets will be encrypted (unreadable) as a secure encrypted tunnel has been created between the two hosts using SSH.
 - Stop Packet Capture in Wireshark
 <p>
 <img src="https://i.imgur.com/5RpgCn7.png" height="80%" width="80%" alt="SSH Traffic Steps"/>
@@ -119,14 +119,14 @@ In this tutorial, we observe various network traffic to and from Azure Virtual M
 <p>
 <b>4. Observe DHCP Traffic</b>
 
-- Open Wireshark, Start a packet capture and filter for DHCP traffic.
+- Open Wireshark, start a packet capture and filter for DHCP traffic.
 - Open notepad and enter the following:<br />
 - ipconfig /release
 - ipconfig /renew
-- Save the file as a .bat file any directory. I have saved it to C:\programdata\dhcp.bat
+- Save the file as a .bat file in any directory. I have saved it to C:\programdata\dhcp.bat
 - This file will execute commands to release the current IP address from the VM and request a new IP address from the DHCP server. This will create DHCP traffic in Wireshark which we will observe.
-- Open Powershell as an administrator, change the directory to where you saved the bat file, and use ls command to confirm there file is there. Next type .\dhcp.bat and press enter.
-- Should should disconnect from the VM as your IP was released and then within 30 seconds be reconnected automatically once the VM obtains a new IP address. If you don't automatically connect back to the VM, manually connect back in with the RDP client.
+- Open Powershell as an administrator, change the directory to where you saved the bat file, and use ls command to confirm the file is there. Next type .\dhcp.bat and press enter.
+- You should disconnect from the VM as your IP was released, then within 1-30 seconds be reconnected automatically once the VM obtains a new IP address. If you don't automatically re-connect to the VM, manually re-connect with the RDP client.
 - Open Wirehsark and observe the traffic. You should see packets showing the Discover, Offer, Request and Acknowledge process between the VM (10.0.0.4) and the DHCP Server (168.63.129.16). The release packet was sent by the VM to the DHCP server by using the ipconfig /release command. Then ipconfig /renew was run immediately afterwards which initiated the Discover, Offer, Request and Acknowledge process between the VM and the DHCP server for my vnet.
 - Stop the packet capture in Wireshark.
 <p>
